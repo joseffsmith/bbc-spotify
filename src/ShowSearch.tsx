@@ -24,7 +24,7 @@ export const ShowSearch = () => {
           alignItems: "baseline",
           maxWidth: 600,
           flexGrow: 1,
-          columnGap: 1,
+          columnGap: { xs: 0, md: 1 },
         }}
       >
         <Input

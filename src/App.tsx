@@ -17,6 +17,7 @@ export const App = () => {
       flexDirection={"column"}
       alignItems={"stretch"}
       rowGap={1}
+      p={1}
       width="100%"
     >
       <Box
