@@ -51,6 +51,11 @@ export const Show = ({ show }: { show: any }) => {
     });
   };
 
+  const handleAdd = async () => {
+    await loadSongs();
+    setShowIdAdding(show.show_id);
+  };
+
   return (
     <>
       <tr style={{ cursor: "pointer" }} key={show.show_id} onClick={handleOpen}>
@@ -86,7 +91,7 @@ export const Show = ({ show }: { show: any }) => {
             variant="soft"
             onClick={(e) => {
               e.stopPropagation();
-              setShowIdAdding(show.show_id);
+              handleAdd();
             }}
           >
             Add to playlist

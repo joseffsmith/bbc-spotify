@@ -28,7 +28,7 @@ export const songsAtomFamily = atomFamily<
   default: (show_id: string) => [],
 });
 
-export const addingShowToPlaylistAtom = atom({
+export const addingShowToPlaylistAtom = atom<string | null>({
   key: "addingShowToPlaylistAtom",
   default: null,
 });

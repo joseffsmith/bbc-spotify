@@ -1,16 +1,12 @@
-import { useEffect, useState } from "react";
-import { Box, Button, Input, List, ListItem, Typography } from "@mui/joy";
-import axios from "axios";
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import { addingShowToPlaylistAtom, brandIdAtom, sessionAtom } from "./atoms";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { Box, Typography } from "@mui/joy";
+import { Outlet, useNavigate } from "react-router-dom";
+import { addingShowToPlaylistAtom, sessionAtom } from "./atoms";
+import { useRecoilValue } from "recoil";
 import { UserProfile } from "./UserProfile";
-import { useTheme } from "@emotion/react";
 import { ShowSearch } from "./ShowSearch";
 import PlaylistModal from "./PlaylistModal";
 
 export const App = () => {
-  const theme = useTheme();
   const session = useRecoilValue(sessionAtom);
   const nav = useNavigate();
 
@@ -73,7 +69,7 @@ export const App = () => {
           <UserProfile />
         </Box>
       )}
-      {addingShowId && <PlaylistModal />}
+      {addingShowId && <PlaylistModal showId={addingShowId} />}
     </Box>
   );
 };

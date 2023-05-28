@@ -4,36 +4,36 @@ import FormLabel from "@mui/joy/FormLabel";
 import Input from "@mui/joy/Input";
 import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
-import Stack from "@mui/joy/Stack";
-
 import Typography from "@mui/joy/Typography";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { addingShowToPlaylistAtom, sessionAtom } from "./atoms";
-import { FormEvent, useEffect, useState } from "react";
+import { addingShowToPlaylistAtom, songsAtomFamily } from "./atoms";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { supabaseClient } from "./SupabaseClient";
 import {
   Avatar,
   Box,
   Chip,
-  IconButton,
   LinearProgress,
   List,
   ListItem,
   ListItemButton,
   ListItemContent,
   ListItemDecorator,
-  ListSubheader,
 } from "@mui/joy";
-import { Icon, InputLabel } from "@mui/material";
 import { Check } from "@mui/icons-material";
 
-export default function BasicModalDialog() {
+export default function PlaylistModal({ showId }: { showId: string }) {
   const [playlists, setPlaylists] = useState<any[]>([]);
+  const [adding, setAdding] = useState(false);
+  const [creating, setCreating] = useState(false);
+
   const [loading, setLoading] = useState(true);
   const [showIdAdding, setShowIdAdding] = useRecoilState(
     addingShowToPlaylistAtom
   );
+
+  const songs = useRecoilValue(songsAtomFamily(showId));
   const [newPlaylistName, setNewPlaylistName] = useState("");
   const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
 
@@ -45,6 +45,10 @@ export default function BasicModalDialog() {
   }, []);
 
   const handleCreatePlaylist = async () => {
+    if (creating) {
+      return;
+    }
+    setCreating(true);
     if (!newPlaylistName) {
       return;
     }
@@ -58,6 +62,25 @@ export default function BasicModalDialog() {
     const plays = await getSpotifyPlaylists();
     setPlaylists(plays);
     setLoading(false);
+    setCreating(false);
+  };
+
+  const handleAddToPlaylist = async () => {
+    if (adding) {
+      return;
+    }
+    setAdding(true);
+    if (!selectedPlaylist) {
+      return;
+    }
+
+    const with_id = songs
+      .filter((s) => s.spotify_id !== null)
+      .map((s) => s.spotify_id) as string[];
+
+    await addSongsToPlaylist(selectedPlaylist, with_id);
+    setAdding(false);
+    setShowIdAdding(null);
   };
 
   return (
@@ -148,16 +171,30 @@ export default function BasicModalDialog() {
           <Button onClick={() => setShowIdAdding(null)} variant="plain">
             Cancel
           </Button>
-          <Button disabled={!selectedPlaylist}>Add</Button>
+          <Button disabled={!selectedPlaylist} onClick={handleAddToPlaylist}>
+            Add
+          </Button>
         </Box>
       </ModalDialog>
     </Modal>
   );
 }
 
-// show playlists initially, load all
-// option to filter down, be able to select a playlist
-// alternatively create a new playlist ? different modal or just
+const addSongsToPlaylist = async (playlistId: string, songIds: string[]) => {
+  const spotifyAuth = await getSpotifyAuth();
+
+  const { data } = await axios.post(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    {
+      position: 0,
+      uris: songIds.map((sId) => "spotify:track:" + sId),
+    },
+    {
+      headers: { ...spotifyAuth },
+    }
+  );
+  return data;
+};
 
 const createSpotifyPlaylist = async (name: string) => {
   const spotifyAuth = await getSpotifyAuth();
