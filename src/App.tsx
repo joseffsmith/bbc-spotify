@@ -17,7 +17,6 @@ export const App = () => {
       flexDirection={"column"}
       alignItems={"stretch"}
       rowGap={1}
-      p={1}
       width="100%"
     >
       <Box
@@ -52,6 +51,7 @@ export const App = () => {
           sx={{
             maxWidth: 1000,
             m: "0 auto",
+            p: 1,
             display: "flex",
             flexDirection: "column",
             width: "100%",

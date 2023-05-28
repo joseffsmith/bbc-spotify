@@ -13,7 +13,6 @@ export const ShowSearch = () => {
   return (
     <Box
       sx={{
-        p: 1,
         display: "flex",
         justifyContent: "center",
       }}
