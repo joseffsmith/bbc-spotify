@@ -6,6 +6,7 @@ import {
   useTheme,
   LinearProgress,
   IconButton,
+  Avatar,
 } from "@mui/joy";
 import { useState } from "react";
 import { useMediaQuery } from "@mui/material";
@@ -130,19 +131,11 @@ export const Show = ({ show }: { show: any }) => {
                         </td>
 
                         <td>
-                          <Box
-                            display={"flex"}
-                            alignItems={"center"}
-                            justifyContent={"flex-end"}
-                          >
-                            {s.spotify_url && (
-                              <a href={s.spotify_url} target="_blank">
-                                <IconButton size="sm" variant="plain">
-                                  <img src={spotifyLogo} />
-                                </IconButton>
-                              </a>
-                            )}
-                          </Box>
+                          {s.spotify_url && (
+                            <a href={s.spotify_url} target="_blank">
+                              <Avatar size="sm" src={spotifyLogo} />
+                            </a>
+                          )}
                         </td>
                       </tr>
                     );
