@@ -31,13 +31,15 @@ export const ShowSearch = () => {
           value={brandId}
           onChange={(e) => setBrandId(e.target.value)}
           placeholder="e.g. b01dmw9x of https://www.bbc.co.uk/sounds/brand/b01dmw9x"
+          endDecorator={
+            <Link to={"/" + brandId}>
+              <Button variant={"soft"} disabled={!brandId}>
+                Load
+              </Button>
+            </Link>
+          }
         />
 
-        <Link to={"/" + brandId}>
-          <Button variant={"solid"} disabled={!brandId}>
-            Load
-          </Button>
-        </Link>
         <Button
           variant="outlined"
           disabled={!brandId}
