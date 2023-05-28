@@ -23,6 +23,7 @@ export const ShowSearch = () => {
           maxWidth: 600,
           flexGrow: 1,
           columnGap: 1,
+          px: 1,
         }}
       >
         <Input
