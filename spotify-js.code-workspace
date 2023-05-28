@@ -1,21 +1,17 @@
 {
   "folders": [
     {
-      "name": "project-root",
-      "path": "./"
-    },
-    {
-      "name": "supabase-functions",
-      "path": "supabase/functions"
+      "path": "."
     }
   ],
   "settings": {
     "files.exclude": {
-      "node_modules/": true,
-      "app/": true,
-      "supabase/functions/": true
+      // "node_modules/": true,
+      // "app/": true,
+      // "supabase/functions/": true
     },
-    "deno.importMap": "./supabase/functions/import_map.json"
+    
+    // "deno.importMap": "./supabase/functions/import_map.json"
 
   }
 }

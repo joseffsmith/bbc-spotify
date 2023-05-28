@@ -23,11 +23,10 @@ export const main = async (brandId: string = "b01dmw9x") => {
   const list = obj.modules.data[1];
 
   const shows = list.data;
-
   return shows.map((s: any) => {
     return {
       brand_id: brandId,
-      show_id: s.id,
+      show_id: s.urn.split(":").at(-1),
       release_timestamp: s.release.date,
       name: s.titles.primary,
       backup_name: s.titles.secondary,
@@ -36,5 +35,3 @@ export const main = async (brandId: string = "b01dmw9x") => {
     };
   });
 };
-
-main();

@@ -9,18 +9,54 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      shows: {
+        Row: {
+          backup_name: string | null
+          brand_id: string | null
+          created_at: string | null
+          duration_seconds: string | null
+          image_url: string | null
+          name: string | null
+          release_timestamp: string | null
+          show_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          backup_name?: string | null
+          brand_id?: string | null
+          created_at?: string | null
+          duration_seconds?: string | null
+          image_url?: string | null
+          name?: string | null
+          release_timestamp?: string | null
+          show_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          backup_name?: string | null
+          brand_id?: string | null
+          created_at?: string | null
+          duration_seconds?: string | null
+          image_url?: string | null
+          name?: string | null
+          release_timestamp?: string | null
+          show_id?: string
+          updated_at?: string | null
+        }
+      }
       songs: {
         Row: {
           apple_id: string | null
           apple_url: string | null
           artist: string | null
           backup_name: string | null
-          bbc_id: string | null
           created_at: string | null
-          id: number
+          generated_id: string
+          is_searched: boolean | null
           name: string | null
           show_id: string | null
           spotify_id: string | null
+          spotify_name: string | null
           spotify_url: string | null
           updated_at: string | null
         }
@@ -29,12 +65,13 @@ export interface Database {
           apple_url?: string | null
           artist?: string | null
           backup_name?: string | null
-          bbc_id?: string | null
           created_at?: string | null
-          id?: number
+          generated_id: string
+          is_searched?: boolean | null
           name?: string | null
           show_id?: string | null
           spotify_id?: string | null
+          spotify_name?: string | null
           spotify_url?: string | null
           updated_at?: string | null
         }
@@ -43,12 +80,13 @@ export interface Database {
           apple_url?: string | null
           artist?: string | null
           backup_name?: string | null
-          bbc_id?: string | null
           created_at?: string | null
-          id?: number
+          generated_id?: string
+          is_searched?: boolean | null
           name?: string | null
           show_id?: string | null
           spotify_id?: string | null
+          spotify_name?: string | null
           spotify_url?: string | null
           updated_at?: string | null
         }

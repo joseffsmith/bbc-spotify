@@ -1,20 +1,60 @@
 import {
   Box,
   Button,
-  //   Collapse,
-  Sheet,
   Table,
   Typography,
   useTheme,
+  LinearProgress,
 } from "@mui/joy";
-import { useLoaderData } from "react-router";
-import { useState } from "react";
+import { useParams } from "react-router";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "@mui/material";
+import { supabaseClient } from "./SupabaseClient";
+import { showsAtomFamily } from "./atoms";
+import { useRecoilState } from "recoil";
+import { Show } from "./Show";
 
 export function Shows() {
-  const shows: any = useLoaderData();
+  const params = useParams();
+  const { brand_id } = params;
+  const [shows, setShows] = useRecoilState(showsAtomFamily(brand_id!));
+
+  const loadShows = async (brand_id: string) => {
+    const { data, error } = await supabaseClient
+      .from("shows")
+      .select("*")
+      .eq("brand_id", brand_id)
+      .order("release_timestamp", { ascending: false });
+    if (data) {
+      setLoading(false);
+      return setShows(Array.from(data.values()));
+    }
+    setLoading(false);
+    return [];
+  };
+
+  useEffect(() => {
+    loadShows(brand_id!);
+  }, [brand_id]);
+
   const theme = useTheme();
   const mq = useMediaQuery(theme.breakpoints.up("sm"));
+  const [loading, setLoading] = useState(true);
+
+  const refreshShows = async () => {
+    setLoading(true);
+    const { data, error } = await supabaseClient.functions.invoke(
+      "show-scraper",
+      {
+        body: { brand_id },
+      }
+    );
+    await loadShows(brand_id!);
+    // const { data, error } = await supabaseClient
+    if (data) {
+      console.log(data);
+    }
+  };
   return (
     <Box>
       <Box
@@ -23,7 +63,7 @@ export function Shows() {
         justifyContent={"space-between"}
         px={1}
       >
-        <Typography level="body2">
+        <Typography level="body3">
           Last update:{" "}
           {new Date().toLocaleString("en-GB", {
             dateStyle: "medium",
@@ -31,11 +71,19 @@ export function Shows() {
           })}
         </Typography>
         <Box display="flex" alignItems={"baseline"} columnGap={2}>
-          <Typography level="body2">{shows.length} Shows</Typography>
-          <Button size="sm" variant="plain">
+          <Typography level="body3">{shows.length} Shows</Typography>
+          <Button
+            onClick={() => refreshShows()}
+            disabled={loading}
+            size="sm"
+            variant="plain"
+          >
             Refresh
           </Button>
         </Box>
+      </Box>
+      <Box height={2} px={1}>
+        {loading && <LinearProgress />}
       </Box>
       <Table stickyHeader width="100%" hoverRow noWrap>
         <colgroup>
@@ -47,103 +95,10 @@ export function Shows() {
 
         <tbody>
           {shows.map((show: any) => {
-            return <Row show={show} key={show.show_id} />;
+            return <Show key={show.show_id} show={show} />;
           })}
         </tbody>
       </Table>
     </Box>
   );
 }
-
-const Row = ({ show }: { show: any }) => {
-  const [open, setOpen] = useState(false);
-  const theme = useTheme();
-  const mq = useMediaQuery(theme.breakpoints.up("sm"));
-
-  return (
-    <>
-      <tr
-        style={{ cursor: "pointer" }}
-        key={show.show_id}
-        onClick={() => {
-          setOpen((p) => !p);
-        }}
-      >
-        {mq && (
-          <td>
-            <img width={80} src={show.image_url} />
-          </td>
-        )}
-
-        <td style={{ overflow: "hidden" }}>
-          <Typography overflow={"hidden"} textOverflow={"ellipsis"}>
-            {show.name}
-          </Typography>
-          <Typography
-            level="body3"
-            overflow={"hidden"}
-            textOverflow={"ellipsis"}
-          >
-            {show.backup_name}
-          </Typography>
-          <Typography level="body2">
-            {new Date(show.release_timestamp).toLocaleString("en-GB", {
-              dateStyle: "short",
-            })}
-          </Typography>
-        </td>
-        <td style={{ textAlign: "right" }}>
-          <Button
-            size="sm"
-            variant="plain"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            View songs
-          </Button>
-          <Button
-            size="sm"
-            variant="soft"
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            Add to playlist
-          </Button>
-        </td>
-      </tr>
-      {/* <tr>
-        <td
-          style={{
-            paddingBottom: 0,
-            paddingTop: 0,
-            ...(!open && {
-              border: "none",
-            }),
-          }}
-          colSpan={6}
-        >
-          <div>
-            <Box sx={{ margin: 1 }}>
-              <Typography gutterBottom component="div">
-                History
-              </Typography>
-              <Table aria-label="purchases">
-                <thead>
-                  <tr>
-                    <td>Date</td>
-                    <td>Customer</td>
-                    <td align="right">Amount</td>
-                    <td align="right">Total price ($)</td>
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </Table>
-            </Box>
-          </div>
-        </td>
-      </tr> */}
-    </>
-  );
-};

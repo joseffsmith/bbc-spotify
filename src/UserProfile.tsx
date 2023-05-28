@@ -18,6 +18,7 @@ export function UserProfile() {
     });
 
     supabaseClient.auth.onAuthStateChange((_event, session) => {
+      console.log({ _event });
       setSession(session);
     });
   }, []);
@@ -27,16 +28,14 @@ export function UserProfile() {
       return;
     }
     setSigningIn(true);
-    const { data, error } = await supabaseClient.auth.signInWithOAuth({
+    await supabaseClient.auth.signInWithOAuth({
       provider: "spotify",
       options: {
         scopes:
           "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public",
       },
     });
-    console.log(data, error);
   };
-  console.log(session);
 
   return (
     <>
@@ -44,7 +43,12 @@ export function UserProfile() {
         <Chip
           variant="soft"
           startDecorator={<Avatar src={spotifyLogo} />}
-          onClick={() => null}
+          onClick={() =>
+            window.open(
+              "https://open.spotify.com/user/" + session.user.identities![0].id,
+              "_blank"
+            )
+          }
         >
           {session.user.identities![0].identity_data!.name}
         </Chip>
