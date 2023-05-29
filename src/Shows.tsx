@@ -16,6 +16,9 @@ import { Show } from "./Show";
 export function Shows({ brandId }: { brandId: string }) {
   const [_shows, setShows] = useRecoilState(showsAtom);
   const shows = Array.from(Object.values(_shows ?? []));
+  const theme = useTheme();
+  const mq = useMediaQuery(theme.breakpoints.up("sm"));
+  const [loading, setLoading] = useState(false);
 
   const loadShows = async (brandId: string) => {
     const { data, error } = await supabaseClient
@@ -25,32 +28,22 @@ export function Shows({ brandId }: { brandId: string }) {
 
     if (data) {
       setShows(
-        data.map((d) => {
-          return [d.show_id, d];
-        })
+        Object.fromEntries(
+          data.map((d) => {
+            return [d.show_id, d];
+          })
+        )
       );
     }
     setLoading(false);
-    return [];
   };
-
-  const theme = useTheme();
-  const mq = useMediaQuery(theme.breakpoints.up("sm"));
-  const [loading, setLoading] = useState(false);
 
   const refreshShows = async () => {
     setLoading(true);
-    const { data, error } = await supabaseClient.functions.invoke(
-      "show-scraper",
-      {
-        body: { brandId },
-      }
-    );
+    await supabaseClient.functions.invoke("show-scraper", {
+      body: { brandId },
+    });
     await loadShows(brandId!);
-    // const { data, error } = await supabaseClient
-    if (data) {
-      console.log(data);
-    }
   };
   return (
     <Box>
