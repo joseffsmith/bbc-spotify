@@ -6,7 +6,7 @@ import Modal from "@mui/joy/Modal";
 import ModalDialog from "@mui/joy/ModalDialog";
 import Typography from "@mui/joy/Typography";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { addingShowToPlaylistAtom, songsAtomFamily } from "./atoms";
+import { addingShowToPlaylistAtom, showsAtom } from "./atoms";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { supabaseClient } from "./SupabaseClient";
@@ -33,7 +33,8 @@ export default function PlaylistModal({ showId }: { showId: string }) {
     addingShowToPlaylistAtom
   );
 
-  const songs = useRecoilValue(songsAtomFamily(showId));
+  const shows = useRecoilValue(showsAtom);
+  const songs = shows?.[showId] ?? [];
   const [newPlaylistName, setNewPlaylistName] = useState("");
   const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
 
@@ -75,8 +76,8 @@ export default function PlaylistModal({ showId }: { showId: string }) {
     }
 
     const with_id = songs
-      .filter((s) => s.spotify_id !== null)
-      .map((s) => s.spotify_id) as string[];
+      .filter((s: any) => s.spotify_id !== null)
+      .map((s: any) => s.spotify_id) as string[];
 
     await addSongsToPlaylist(selectedPlaylist, with_id);
     setAdding(false);

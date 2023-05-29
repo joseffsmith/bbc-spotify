@@ -6,50 +6,47 @@ import {
   useTheme,
   LinearProgress,
 } from "@mui/joy";
-import { useParams } from "react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMediaQuery } from "@mui/material";
 import { supabaseClient } from "./SupabaseClient";
-import { showsAtomFamily } from "./atoms";
+import { showsAtom } from "./atoms";
 import { useRecoilState } from "recoil";
 import { Show } from "./Show";
 
-export function Shows() {
-  const params = useParams();
-  const { brand_id } = params;
-  const [shows, setShows] = useRecoilState(showsAtomFamily(brand_id!));
+export function Shows({ brandId }: { brandId: string }) {
+  const [_shows, setShows] = useRecoilState(showsAtom);
+  const shows = Array.from(Object.values(_shows ?? []));
 
-  const loadShows = async (brand_id: string) => {
+  const loadShows = async (brandId: string) => {
     const { data, error } = await supabaseClient
       .from("shows")
-      .select("*")
-      .eq("brand_id", brand_id)
-      .order("release_timestamp", { ascending: false });
+      .select("*, songs (*)")
+      .eq("brand_id", brandId);
+
     if (data) {
-      setLoading(false);
-      return setShows(Array.from(data.values()));
+      setShows(
+        data.map((d) => {
+          return [d.show_id, d];
+        })
+      );
     }
     setLoading(false);
     return [];
   };
 
-  useEffect(() => {
-    loadShows(brand_id!);
-  }, [brand_id]);
-
   const theme = useTheme();
   const mq = useMediaQuery(theme.breakpoints.up("sm"));
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const refreshShows = async () => {
     setLoading(true);
     const { data, error } = await supabaseClient.functions.invoke(
       "show-scraper",
       {
-        body: { brand_id },
+        body: { brandId },
       }
     );
-    await loadShows(brand_id!);
+    await loadShows(brandId!);
     // const { data, error } = await supabaseClient
     if (data) {
       console.log(data);

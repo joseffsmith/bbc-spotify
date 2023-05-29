@@ -1,16 +1,26 @@
-import { Box, Typography } from "@mui/joy";
+import { Box, CircularProgress, LinearProgress, Typography } from "@mui/joy";
 import { Outlet, useNavigate } from "react-router-dom";
-import { addingShowToPlaylistAtom, sessionAtom } from "./atoms";
+import {
+  addingShowToPlaylistAtom,
+  brandIdAtom,
+  isLoadingShowsAtom,
+  sessionAtom,
+  showsAtom,
+} from "./atoms";
 import { useRecoilValue } from "recoil";
 import { UserProfile } from "./UserProfile";
 import { ShowSearch } from "./ShowSearch";
 import PlaylistModal from "./PlaylistModal";
+import { Shows } from "./Shows";
 
 export const App = () => {
   const session = useRecoilValue(sessionAtom);
   const nav = useNavigate();
 
   const addingShowId = useRecoilValue(addingShowToPlaylistAtom);
+  const brandId = useRecoilValue(brandIdAtom);
+  const shows = useRecoilValue(showsAtom);
+  const isLoadingShows = useRecoilValue(isLoadingShowsAtom);
   return (
     <Box
       display={"flex"}
@@ -58,7 +68,19 @@ export const App = () => {
           }}
         >
           <ShowSearch />
-          <Outlet />
+          {isLoadingShows && (
+            <Box
+              sx={{
+                pt: "25dvh",
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+          {brandId && shows && <Shows brandId={brandId} />}
         </Box>
       ) : null}
       {addingShowId && <PlaylistModal showId={addingShowId} />}

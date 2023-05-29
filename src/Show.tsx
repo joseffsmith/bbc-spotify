@@ -5,13 +5,11 @@ import {
   Typography,
   useTheme,
   LinearProgress,
-  IconButton,
   Avatar,
 } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useMediaQuery } from "@mui/material";
-import { supabaseClient } from "./SupabaseClient";
-import { addingShowToPlaylistAtom, songsAtomFamily } from "./atoms";
+import { addingShowToPlaylistAtom } from "./atoms";
 import { useRecoilState } from "recoil";
 import spotifyLogo from "./assets/spotify.svg";
 
@@ -20,34 +18,18 @@ export const Show = ({ show }: { show: any }) => {
     addingShowToPlaylistAtom
   );
   const [open, setOpen] = useState(false);
-  const [songs, setSongs] = useRecoilState(songsAtomFamily(show.show_id));
+  const songs = show.songs;
   const [loading, setLoading] = useState(false);
   const theme = useTheme();
   const mq = useMediaQuery(theme.breakpoints.up("sm"));
 
-  const loadSongs = async () => {
-    setLoading(true);
-    const { data, error } = await supabaseClient
-      .from("songs")
-      .select("*")
-      .eq("show_id", show.show_id);
-    setLoading(false);
-    if (data) {
-      setSongs(Array.from(data.values()));
-    }
-  };
-
   const handleOpen = async () => {
     setOpen((p) => {
-      if (!p) {
-        loadSongs();
-      }
       return !p;
     });
   };
 
   const handleAdd = async () => {
-    await loadSongs();
     setShowIdAdding(show.show_id);
   };
 
@@ -115,7 +97,7 @@ export const Show = ({ show }: { show: any }) => {
                   <col width="50px"></col>
                 </colgroup>
                 <tbody>
-                  {songs.map((s) => {
+                  {songs.map((s: any) => {
                     return (
                       <tr style={{ background: "none" }} key={s.generated_id}>
                         <td>{s.artist}</td>

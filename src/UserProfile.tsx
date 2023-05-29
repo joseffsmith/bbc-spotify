@@ -33,6 +33,7 @@ export function UserProfile() {
       options: {
         scopes:
           "playlist-read-private playlist-read-collaborative playlist-modify-private playlist-modify-public",
+        redirectTo: window.location.origin,
       },
     });
   };
