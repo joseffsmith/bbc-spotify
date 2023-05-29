@@ -60,16 +60,7 @@ export const App = () => {
           <ShowSearch />
           <Outlet />
         </Box>
-      ) : (
-        <Box
-          width="100%"
-          display={"flex"}
-          justifyContent={"center"}
-          alignItems={"center"}
-        >
-          <UserProfile />
-        </Box>
-      )}
+      ) : null}
       {addingShowId && <PlaylistModal showId={addingShowId} />}
     </Box>
   );
