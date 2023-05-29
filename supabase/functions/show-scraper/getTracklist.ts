@@ -1,7 +1,7 @@
 import axios from "https://esm.sh/axios";
 import cheerio from "https://esm.sh/cheerio";
 
-export const main = async (showId: string = "m001lvx7") => {
+export const getSongs = async (showId: string = "m001lvx7") => {
   const url = "https://www.bbc.co.uk/sounds/play/";
   const { data: body } = await axios.get(url + showId);
 

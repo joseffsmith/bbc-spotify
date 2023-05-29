@@ -8,7 +8,7 @@ import {
   IconButton,
   Avatar,
 } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMediaQuery } from "@mui/material";
 import { supabaseClient } from "./SupabaseClient";
 import { addingShowToPlaylistAtom, songsAtomFamily } from "./atoms";
@@ -27,11 +27,6 @@ export const Show = ({ show }: { show: any }) => {
 
   const loadSongs = async () => {
     setLoading(true);
-    const { data: d, error: e } = await supabaseClient.functions.invoke(
-      "bbc-scraper",
-      { body: { showId: show.show_id } }
-    );
-    console.log(d, e);
     const { data, error } = await supabaseClient
       .from("songs")
       .select("*")
@@ -39,7 +34,6 @@ export const Show = ({ show }: { show: any }) => {
     setLoading(false);
     if (data) {
       setSongs(Array.from(data.values()));
-      console.log(Array.from(data.values()));
     }
   };
 

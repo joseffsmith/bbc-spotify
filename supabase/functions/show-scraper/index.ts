@@ -6,6 +6,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js";
 import { main } from "./getShowList.ts";
+import { getSongs } from "./getTracklist.ts";
 
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -15,7 +16,11 @@ export const corsHeaders = {
 
 serve(
   async (
-    req: { json: () => PromiseLike<{ brandId: string }> | { brandId: string } },
+    req: {
+      headers(arg0: string, headers: any): unknown;
+      method: string;
+      json: () => PromiseLike<{ brandId: string }> | { brandId: string };
+    },
   ) => {
     // This is needed if you're planning to invoke your function from a browser.
     if (req.method === "OPTIONS") {
@@ -32,6 +37,17 @@ serve(
     const shows = await main(brandId);
     const { data, error } = await supabase.from("shows").upsert(shows, {
       onConflict: "show_id",
+    });
+
+    // TODO: only grab songs for shows we don't have?
+
+    const to_insert =
+      (await Promise.allSettled(shows.map((s) => getSongs(s.show_id)))).flatMap(
+        (res) => res.status === "fulfilled" ? res.value : [],
+      );
+
+    const resp = await supabase.from("songs").insert(to_insert, {
+      onConflict: "generated_id",
     });
     const d = {
       message: error,

@@ -23,6 +23,7 @@ export const main = async (brandId: string = "b01dmw9x") => {
   const list = obj.modules.data[1];
 
   const shows = list.data;
+
   return shows.map((s: any) => {
     return {
       brand_id: brandId,

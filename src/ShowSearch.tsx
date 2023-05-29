@@ -15,6 +15,7 @@ export const ShowSearch = () => {
       sx={{
         display: "flex",
         justifyContent: "center",
+        px: 1,
       }}
     >
       <Box
